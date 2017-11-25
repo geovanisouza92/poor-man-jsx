@@ -1,5 +1,10 @@
 import { isPrimitive } from "./isPrimitive";
 
+/**
+ * This function converts an JSX element representation into raw html
+ * 
+ * @param {object} element The element created by "createElement"
+ */
 export function render(element) {
   if (isPrimitive(element)) {
     return (element).toString();

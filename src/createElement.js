@@ -1,5 +1,51 @@
 import { isPrimitive } from "./isPrimitive";
 
+/**
+ * createElement is the function responsible for normalize JSX calls
+ * into simple tree-like objects.
+ * 
+ * A JSX element like
+ * 
+ * <div style="color:red">Hello <em>world</em></div>
+ * 
+ * will be replaced by Babel as
+ * 
+ * createElement(
+ *   "h1",
+ *   { style: "color:red" },
+ *   "Hello ",
+ *   createElement(
+ *     "em",
+ *     null,
+ *     "world"
+ *   )
+ * )
+ * 
+ * and will return
+ * 
+ * {
+ *   "tag": "h1",
+ *   "props": { style: "color:red" },
+ *   "children": [
+ *     "Hello ",
+ *     {
+ *       "tag": "em",
+ *       "props": null,
+ *       "children": null,
+ *       "text": "world"
+ *     }
+ *   ],
+ *   "text": null
+ * }
+ * 
+ * This resulting object is used by "renderers" to construct the correct 
+ * representation on each platform (browser, native, console/text).
+ * 
+ * @param {string} tag This is the tag name
+ * @param {object|null} maybeProps This could be an object with key-values for props/attrs
+ * @param {array|string} maybeChildren This could be an array of elements or raw text
+ */
+
 // Most of this function came from https://github.com/snabbdom/snabbdom/blob/2271b7bdf15577eabd8de961f4e5bba5bd1515fe/src/h.ts#L22
 export function createElement(tag, maybeProps, maybeChildren) {
   let props = {};
@@ -16,6 +62,7 @@ export function createElement(tag, maybeProps, maybeChildren) {
     maybeChildren = cArr;
   }
 
+  // Here we normalize function arguments
   if (maybeChildren !== undefined) {
     props = maybeProps;
     if (Array.isArray(maybeChildren)) { 
@@ -37,6 +84,7 @@ export function createElement(tag, maybeProps, maybeChildren) {
     }
   }
 
-  // TODO: SVG
+  // TODO: SVG support
+
   return { tag, props, children, text };
 }

@@ -1,5 +1,12 @@
 import { isPrimitive } from "./isPrimitive";
 
+/**
+ * This function create DOM elements from JSX element representations
+ * 
+ * There's no support for event listeners... yet.
+ * 
+ * @param {object} element The element created by "createElement"
+ */
 export function render(element) {
   if (isPrimitive(element)) {
     return document.createTextNode((element).toString());

@@ -6,7 +6,7 @@ import { isPrimitive } from "./isPrimitive";
  * 
  * A JSX element like
  * 
- * <div style="color:red">Hello <em>world</em></div>
+ * <h1 style="color:red">Hello <em>world</em></h1>
  * 
  * will be replaced by Babel as
  * 

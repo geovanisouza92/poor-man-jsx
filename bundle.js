@@ -83,15 +83,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__renderToText__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__renderToDOM__ = __webpack_require__(5);
 /** @jsx createElement */
+//  ^ here we define our custom JSX pragma, the function that will be called
+//    to create new elements
 
 
 
 
 
+// This is our "component"
+// very similar to React pure functional components, but in fact, could
+// hold some state on the closure
 function Header() {
   return Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
     "h1",
-    { style: "color:red" },
+    { style: "color:red", "class": "foo" },
     "Hello ",
     Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
       "em",
@@ -101,11 +106,14 @@ function Header() {
   );
 }
 
+// here we create a new instance of our component. `el` will be an
+// tree-like object
 var el = Header();
 
 console.log('Element:', el);
 console.log('HTML text:', Object(__WEBPACK_IMPORTED_MODULE_1__renderToText__["a" /* render */])(el));
 
+// conditionally render on browser
 if ('document' in global) {
   document.body.appendChild(Object(__WEBPACK_IMPORTED_MODULE_2__renderToDOM__["a" /* render */])(el));
 }
@@ -147,11 +155,59 @@ module.exports = g;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__isPrimitive__ = __webpack_require__(0);
 
 
+/**
+ * createElement is the function responsible for normalize JSX calls
+ * into simple tree-like objects.
+ * 
+ * A JSX element like
+ * 
+ * <h1 style="color:red">Hello <em>world</em></h1>
+ * 
+ * will be replaced by Babel as
+ * 
+ * createElement(
+ *   "h1",
+ *   { style: "color:red" },
+ *   "Hello ",
+ *   createElement(
+ *     "em",
+ *     null,
+ *     "world"
+ *   )
+ * )
+ * 
+ * and will return
+ * 
+ * {
+ *   "tag": "h1",
+ *   "props": { style: "color:red" },
+ *   "children": [
+ *     "Hello ",
+ *     {
+ *       "tag": "em",
+ *       "props": null,
+ *       "children": null,
+ *       "text": "world"
+ *     }
+ *   ],
+ *   "text": null
+ * }
+ * 
+ * This resulting object is used by "renderers" to construct the correct 
+ * representation on each platform (browser, native, console/text).
+ * 
+ * @param {string} tag This is the tag name
+ * @param {object|null} maybeProps This could be an object with key-values for props/attrs
+ * @param {array|string} maybeChildren This could be an array of elements or raw text
+ */
+
+// Most of this function came from https://github.com/snabbdom/snabbdom/blob/2271b7bdf15577eabd8de961f4e5bba5bd1515fe/src/h.ts#L22
 function createElement(tag, maybeProps, maybeChildren) {
   var props = {};
   var children = void 0;
   var text = void 0;
 
+  // This part came from https://github.com/facebook/react/blob/7d27851bf4aa8129276614b62edf9ade4aaa4cbd/packages/react/src/ReactElement.js#L202
   var cLen = arguments.length - 2;
   if (cLen > 1) {
     var cArr = Array(cLen);
@@ -161,6 +217,7 @@ function createElement(tag, maybeProps, maybeChildren) {
     maybeChildren = cArr;
   }
 
+  // Here we normalize function arguments
   if (maybeChildren !== undefined) {
     props = maybeProps;
     if (Array.isArray(maybeChildren)) {
@@ -182,7 +239,8 @@ function createElement(tag, maybeProps, maybeChildren) {
     }
   }
 
-  // TODO: SVG
+  // TODO: SVG support
+
   return { tag: tag, props: props, children: children, text: text };
 }
 
@@ -195,12 +253,17 @@ function createElement(tag, maybeProps, maybeChildren) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__isPrimitive__ = __webpack_require__(0);
 
 
+/**
+ * This function converts an JSX element representation into raw html
+ * 
+ * @param {object} element The element created by "createElement"
+ */
 function render(element) {
   if (Object(__WEBPACK_IMPORTED_MODULE_0__isPrimitive__["a" /* isPrimitive */])(element)) {
     return element.toString();
   }
 
-  var props = '';
+  var props = [];
   if (element.props) {
     props = Object.keys(element.props).map(function (prop) {
       return prop + '="' + element.props[prop] + '"';
@@ -209,7 +272,7 @@ function render(element) {
 
   var children = element.text || element.children.map(render).join('');
 
-  var open = [element.tag, props].filter(Boolean).join(' ');
+  var open = [element.tag].concat(props).filter(Boolean).join(' ');
   return '<' + open + '>' + children + '</' + element.tag + '>';
 }
 
@@ -222,6 +285,13 @@ function render(element) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__isPrimitive__ = __webpack_require__(0);
 
 
+/**
+ * This function create DOM elements from JSX element representations
+ * 
+ * There's no support for event listeners... yet.
+ * 
+ * @param {object} element The element created by "createElement"
+ */
 function render(element) {
   if (Object(__WEBPACK_IMPORTED_MODULE_0__isPrimitive__["a" /* isPrimitive */])(element)) {
     return document.createTextNode(element.toString());

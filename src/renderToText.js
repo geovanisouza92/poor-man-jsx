@@ -10,7 +10,7 @@ export function render(element) {
     return (element).toString();
   }
 
-  let props = '';
+  let props = [];
   if (element.props) {
     props = Object.keys(element.props).map((prop) => {
       return `${prop}="${element.props[prop]}"`;
@@ -19,6 +19,6 @@ export function render(element) {
 
   let children = element.text || element.children.map(render).join('');
 
-  const open = [element.tag, props].filter(Boolean).join(' ');
+  const open = [element.tag].concat(props).filter(Boolean).join(' ');
   return `<${open}>${children}</${element.tag}>`
 }

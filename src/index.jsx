@@ -11,7 +11,7 @@ import { render as renderToDOM } from "./renderToDOM";
 // hold some state on the closure
 function Header() {
   return (
-    <h1 style="color:red">
+    <h1 style="color:red" class="foo">
       Hello <em>world</em>
     </h1>
   );

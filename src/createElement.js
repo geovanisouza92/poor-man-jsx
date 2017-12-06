@@ -49,7 +49,7 @@ import { isPrimitive } from "./isPrimitive";
 // Most of this function came from https://github.com/snabbdom/snabbdom/blob/2271b7bdf15577eabd8de961f4e5bba5bd1515fe/src/h.ts#L22
 export function createElement(tag, maybeProps, maybeChildren) {
   let props = {};
-  let children;
+  let children = [];
   let text;
 
   // This part came from https://github.com/facebook/react/blob/7d27851bf4aa8129276614b62edf9ade4aaa4cbd/packages/react/src/ReactElement.js#L202

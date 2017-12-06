@@ -82,6 +82,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createElement__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__renderToText__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__renderToDOM__ = __webpack_require__(5);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 /** @jsx createElement */
 //  ^ here we define our custom JSX pragma, the function that will be called
 //    to create new elements
@@ -93,22 +95,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // This is our "component"
 // very similar to React pure functional components, but in fact, could
 // hold some state on the closure
-function Header() {
+function Header(props) {
   return Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
     "h1",
-    { style: "color:red", "class": "foo" },
-    "Hello ",
-    Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
+    { style: { color: props.color }, className: "foo" },
+    ["Hello ", Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
       "em",
       null,
       "world"
-    )
+    )].concat(_toConsumableArray(props.children))
   );
 }
 
 // here we create a new instance of our component. `el` will be an
 // tree-like object
-var el = Header();
+var el = Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
+  Header,
+  { color: "green" },
+  Object(__WEBPACK_IMPORTED_MODULE_0__createElement__["a" /* createElement */])(
+    "h2",
+    null,
+    "EITA"
+  )
+);
 
 console.log('Element:', el);
 console.log('HTML text:', Object(__WEBPACK_IMPORTED_MODULE_1__renderToText__["a" /* render */])(el));
@@ -204,7 +213,7 @@ module.exports = g;
 // Most of this function came from https://github.com/snabbdom/snabbdom/blob/2271b7bdf15577eabd8de961f4e5bba5bd1515fe/src/h.ts#L22
 function createElement(tag, maybeProps, maybeChildren) {
   var props = {};
-  var children = void 0;
+  var children = [];
   var text = void 0;
 
   // This part came from https://github.com/facebook/react/blob/7d27851bf4aa8129276614b62edf9ade4aaa4cbd/packages/react/src/ReactElement.js#L202
@@ -263,17 +272,37 @@ function render(element) {
     return element.toString();
   }
 
+  if (typeof element.tag === 'function') {
+    var _props = element.props || {};
+    _props.children = element.text && [element.text] || element.children;
+    element = element.tag(_props);
+    return render(element);
+  }
+
   var props = [];
   if (element.props) {
     props = Object.keys(element.props).map(function (prop) {
-      return prop + '="' + element.props[prop] + '"';
+      switch (prop) {
+        case "htmlFor":
+          return "for=\"" + element.props[prop] + "\"";
+        case "className":
+          return "class=\"" + element.props[prop] + "\"";
+        case "style":
+          {
+            return Object.keys(element.props[prop]).reduce(function (s, it) {
+              return s + (it + ":" + element.props[prop][it] + ";");
+            }, 'style="') + '"';
+          }
+        default:
+          return prop + "=\"" + element.props[prop] + "\"";
+      }
     });
   }
 
   var children = element.text || element.children.map(render).join('');
 
   var open = [element.tag].concat(props).filter(Boolean).join(' ');
-  return '<' + open + '>' + children + '</' + element.tag + '>';
+  return "<" + open + ">" + children + "</" + element.tag + ">";
 }
 
 /***/ }),

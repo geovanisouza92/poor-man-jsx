@@ -12,7 +12,11 @@ import { render as renderToDOM } from "./renderToDOM";
 function Header(props) {
   return (
     <h1 style={{ color: props.color }} className="foo">
-      {["Hello ", <em>world</em>, ...props.children]}
+      {[
+        "Hello ", 
+        <em>world</em>, 
+        ...props.children
+      ]}
     </h1>
   );
 }
